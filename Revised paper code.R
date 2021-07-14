@@ -331,9 +331,9 @@ ggsave(paste0("plots/distribution_comparison.png"), width = 89, height = 89, uni
 
 covtest <- melt(as.data.table(data.frame(y = y_test, x = drop(replicate(100, predict(model, x_test, batch_size = 4096))))), id.vars = "y")
 covtest
-paste("95% =", 1-round(nrow(covtest[y > quantile(value, 0.95)])/nrow(covtest), 3))
-paste("70% =", 1-round(nrow(covtest[y > quantile(value, 0.70)])/nrow(covtest), 3))
-paste("50% =", 1-round(nrow(covtest[y > quantile(value, 0.50)])/nrow(covtest), 3))
+paste("95% =", round(nrow(covtest[y < quantile(value, 0.975) & y > quantile(value, 0.025)])/nrow(covtest), 3))
+paste("70% =", round(nrow(covtest[y < quantile(value, 0.85) & y > quantile(value, 0.15)])/nrow(covtest), 3))
+paste("50% =", round(nrow(covtest[y < quantile(value, 0.75) & y > quantile(value, 0.25)])/nrow(covtest), 3))
 
 # Create maps of target variable using the trained neural network
 
