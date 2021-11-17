@@ -1,10 +1,17 @@
 # This file contains the function for freezing the dropout mask of the deep neural network #
 # Calling this function allows us to evaluate single posterior samples at multiple locations #
 # Useful for generating maps, cross sections, etc that are coherent simulations #
+# Contact c.kirkwood@exeter.ac.uk with any queries
+# Code also available at https://github.com/charliekirkwood/deepgeostat
 
-dropout_sample <- function(model){
-  load_model_weights_hdf5(object = model, filepath = paste0(getwd(), "/models/modelweights.hdf5"))
-  weights <- model %>% get_weights()
+dropout_sample <- function(...){
+  drop_model <- keras_model(
+    inputs = c(conv_input, auxiliary_input), 
+    outputs = main_output
+  )
+  
+  load_model_weights_hdf5(object = drop_model, filepath = paste0(getwd(), "/models/modelweights.hdf5"))
+  weights <- drop_model %>% get_weights()
   
   dropweights <- weights
   #str(dropweights)
@@ -46,7 +53,7 @@ dropout_sample <- function(model){
   dropweights[[13]] <- t(t(dropweights[[13]]) * maskl7)*(1/(1-dropratedense))
   dropweights[[14]] <- (dropweights[[14]] * maskl7)*(1/(1-dropratedense))
   
-  model %>% set_weights(dropweights)
+  drop_model %>% set_weights(dropweights)
   
-  return(model)
+  return(predict(drop_model, ...))
 }
